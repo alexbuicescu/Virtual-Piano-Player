@@ -1,3 +1,5 @@
+Virtual-Piano-Player
+=================
 Virtual piano player lets you play a music sheet. What it does is to simulate key strokes accordingly to the music sheet.
 
 How it works:
