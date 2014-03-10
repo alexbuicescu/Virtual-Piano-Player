@@ -1,17 +1,16 @@
 import java.awt.EventQueue;
 
+import javax.print.DocFlavor.URL;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JTextPane;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import java.awt.AWTException;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.MouseInfo;
 import java.awt.Robot;
-import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
@@ -26,14 +25,39 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.JCheckBox;
 
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
 public class main {
 
+
+	class MyThread extends Thread 
+	{    
+		boolean play = false;
+		boolean pause = false;
+	    public void run()
+		{
+	    	play = true;
+	    	sing2();
+	    	while(chckbxNewCheckBox.isSelected() && play)
+			{
+	    		sing2();
+			}
+	    }
+	}
+
+	public boolean is_playing = false;
+	public JCheckBox chckbxNewCheckBox;
+	public MyThread player_thread;
+	public WebDriver driver;
+	public WebElement element;
 	public Robot robocop = null;
 	private JFrame frame;
-	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
 	private JTextPane musicSheet;
+	
 	
 	public int SpaceTime = 350, LineTime = 350, PlayTime = 3000, NotesTime = 280;
 	private JTextField textField_3;
@@ -47,199 +71,109 @@ public class main {
 				try {
 					main window = new main();
 					window.frame.setVisible(true);
+					 try {
+				            // Set System L&F
+				        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				    } 
+				    catch (UnsupportedLookAndFeelException e) {
+				       // handle exception
+				    }
+				    catch (ClassNotFoundException e) {
+				       // handle exception
+				    }
+				    catch (InstantiationException e) {
+				       // handle exception
+				    }
+				    catch (IllegalAccessException e) {
+				       // handle exception
+				    }
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
 	}
-
+	
+	public void isWindows(String OS) {
+		System.out.println(OS);
+		if(OS.indexOf("in") >= 0)
+		{
+			File file = new File("chromedriver_windows/chromedriver.exe");
+			System.setProperty("webdriver.chrome.driver", file.getAbsolutePath());
+		}
+	}
+ 
+	public void isMac(String OS) {
+		if(OS.indexOf("ac") >= 0)
+		{
+			File file = new File("chromedriver_mac/chromedriver");
+			System.setProperty("webdriver.chrome.driver", file.getAbsolutePath());
+		}
+	}
+ 
+	public void isUnix(String OS) {
+		if(OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0 )
+		{
+			File file = new File("chromedriver_linux/chromedriver");
+			System.setProperty("webdriver.chrome.driver", file.getAbsolutePath());			
+		}
+	}
 	/**
 	 * Create the application.
 	 */
 	public main() {
 		initialize();
 	}
-	
-	public int CharAction(char caracter)
+	public void sing2()
 	{
-		switch (caracter)
-		{
-			case ' ': return -2;
-			case '\n': return -2;
-			case '-': return -3;
-			case 'a': return KeyEvent.VK_A;
-			case 'b': return KeyEvent.VK_B;
-			case 'c': return KeyEvent.VK_C;
-			case 'd': return KeyEvent.VK_D;
-			case 'e': return KeyEvent.VK_E;
-			case 'f': return KeyEvent.VK_F;
-			case 'g': return KeyEvent.VK_G;
-			case 'h': return KeyEvent.VK_H;
-			case 'i': return KeyEvent.VK_I;
-			case 'j': return KeyEvent.VK_J;
-			case 'k': return KeyEvent.VK_K;
-			case 'l': return KeyEvent.VK_L;
-			case 'm': return KeyEvent.VK_M;
-			case 'n': return KeyEvent.VK_N;
-			case 'o': return KeyEvent.VK_O;
-			case 'p': return KeyEvent.VK_P;
-			case 'q': return KeyEvent.VK_Q;
-			case 'r': return KeyEvent.VK_R;
-			case 's': return KeyEvent.VK_S;
-			case 't': return KeyEvent.VK_T;
-			case 'u': return KeyEvent.VK_U;
-			case 'v': return KeyEvent.VK_V;
-			case 'x': return KeyEvent.VK_X;
-			case 'y': return KeyEvent.VK_Y;
-			case 'z': return KeyEvent.VK_Z;
-			case 'w': return KeyEvent.VK_W;
-			
-			case '0': return KeyEvent.VK_0;
-			case '1': return KeyEvent.VK_1;
-			case '2': return KeyEvent.VK_2;
-			case '3': return KeyEvent.VK_3;
-			case '4': return KeyEvent.VK_4;
-			case '5': return KeyEvent.VK_5;
-			case '6': return KeyEvent.VK_6;
-			case '7': return KeyEvent.VK_7;
-			case '8': return KeyEvent.VK_8;
-			case '9': return KeyEvent.VK_9;
-		}
-		return -1;
-	}
-
-	public int CharActionShift(char caracter)
-	{
-		switch (caracter)
-		{
-			case 'A': return KeyEvent.VK_A;
-			case 'B': return KeyEvent.VK_B;
-			case 'C': return KeyEvent.VK_C;
-			case 'D': return KeyEvent.VK_D;
-			case 'E': return KeyEvent.VK_E;
-			case 'F': return KeyEvent.VK_F;
-			case 'G': return KeyEvent.VK_G;
-			case 'H': return KeyEvent.VK_H;
-			case 'I': return KeyEvent.VK_I;
-			case 'J': return KeyEvent.VK_J;
-			case 'K': return KeyEvent.VK_K;
-			case 'L': return KeyEvent.VK_L;
-			case 'M': return KeyEvent.VK_M;
-			case 'N': return KeyEvent.VK_N;
-			case 'O': return KeyEvent.VK_O;
-			case 'P': return KeyEvent.VK_P;
-			case 'Q': return KeyEvent.VK_Q;
-			case 'R': return KeyEvent.VK_R;
-			case 'S': return KeyEvent.VK_S;
-			case 'T': return KeyEvent.VK_T;
-			case 'U': return KeyEvent.VK_U;
-			case 'V': return KeyEvent.VK_V;
-			case 'X': return KeyEvent.VK_X;
-			case 'Y': return KeyEvent.VK_Y;
-			case 'Z': return KeyEvent.VK_Z;
-			case 'W': return KeyEvent.VK_W;
-			
-			case ')': return KeyEvent.VK_0;
-			case '!': return KeyEvent.VK_1;
-			case '@': return KeyEvent.VK_2;
-			case '#': return KeyEvent.VK_3;
-			case '$': return KeyEvent.VK_4;
-			case '%': return KeyEvent.VK_5;
-			case '^': return KeyEvent.VK_6;
-			case '&': return KeyEvent.VK_7;
-			case '*': return KeyEvent.VK_8;
-			case '(': return KeyEvent.VK_9;
-		}
-		return -1;
-	}
-	
-	
-	public void sing()
-	{
-		robocop.delay(SpaceTime);
-		
 		int sheetSize = musicSheet.getText().length();
 		String text = musicSheet.getText();
-		for(int i = 0; i < musicSheet.getText().length(); i++)
+		for(int i = 0; i < sheetSize; i++)
 		{
-			if(MouseInfo.getPointerInfo().getLocation().x < 10 &&
-					MouseInfo.getPointerInfo().getLocation().y < 10)
+			if(player_thread.play == false)
 			{
-				break;
+				return;
 			}
 			
-			if(text.charAt(i) != '[' && text.charAt(i) != '{')// && text.charAt(i) != ']')
+			if(player_thread.pause == true)
 			{
-				int charAct = CharAction(text.charAt(i));
-				if(charAct == -1)
+				i--;
+				continue;
+			}
+			
+			if(text.charAt(i) != '[' && text.charAt(i) != '{')
+			{
+				if(text.charAt(i) != ' ' && text.charAt(i) != '-')
 				{
-					int charActShift = CharActionShift(text.charAt(i));
-					if(charActShift != -1)
-					{
-						robocop.keyPress(KeyEvent.VK_SHIFT);
-						robocop.keyPress(charActShift);
-						robocop.keyRelease(charActShift);
-						robocop.keyRelease(KeyEvent.VK_SHIFT);
-						robocop.delay(NotesTime);
-					}
+					playnote(String.valueOf(text.charAt(i)));
+					wait(NotesTime);
 				}
 				else
-					if(charAct == -2)
+					if(text.charAt(i) == ' ')
 					{
-						robocop.delay(SpaceTime);
+						wait(SpaceTime);
 					}
 					else
-						if(charAct == -3)
+						if(text.charAt(i) == '-')
 						{
-							robocop.delay(LineTime);
-						}
-						else
-						{
-							robocop.keyPress(charAct);
-							robocop.keyRelease(charAct);
-							robocop.delay(NotesTime);
+							wait(LineTime);
 						}
 			}
 			else
 				if(text.charAt(i) == '[')
 				{
-					int taste[] = new int[50];
-					int nr = 0;
-					boolean isShiftPressed = false;
+					String combinatie = "";
 					
 					int j = i + 1;
 					while(text.charAt(j) != ']')
 					{
-						int charAct = CharAction(text.charAt(j));
-						if(charAct == -1)
-						{
-							charAct = CharActionShift(text.charAt(j));
-							if(charAct != -1)
-							{
-								isShiftPressed = true;
-							}
-						}
-						taste[nr] = charAct;
+						combinatie += text.charAt(j);
 						j++;
-						nr++;
 					}
 					
-					if(isShiftPressed)
-					{
-						robocop.keyPress(KeyEvent.VK_SHIFT);
-					}
-					for(int k = 0; k < nr; k++)
-					{
-						robocop.keyPress(taste[k]);
-					}
-					for(int k = 0; k < nr; k++)
-					{
-						robocop.keyRelease(taste[k]);
-					}
-					robocop.keyRelease(KeyEvent.VK_SHIFT);
-					robocop.delay(NotesTime);
-					
+					playnote(combinatie);
+					wait(NotesTime);
+										
 					i = j;
 				}
 				else
@@ -259,20 +193,28 @@ public class main {
 						}
 						catch(Exception ex)
 						{
-							
 						}
-						robocop.delay(pauza);
+						wait(pauza);
 						i = j;
 					}
 		}
 	}
 
+	void playnote(String c)
+	{
+		element.sendKeys(c);
+	}
+	
+	void wait(int ms)
+	{
+		robocop.delay(ms);
+	}
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
 		
-		final boolean stop = false;
 		try {
 			robocop = new Robot();
 		} catch (AWTException e) {
@@ -285,8 +227,8 @@ public class main {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		final JCheckBox chckbxNewCheckBox = new JCheckBox("Repeat");
-		chckbxNewCheckBox.setBounds(439, 200, 75, 25);
+		chckbxNewCheckBox = new JCheckBox("Repeat");
+		chckbxNewCheckBox.setBounds(459, 301, 75, 25);
 		frame.getContentPane().add(chckbxNewCheckBox);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -296,26 +238,35 @@ public class main {
 		musicSheet = new JTextPane();
 		scrollPane.setViewportView(musicSheet);
 		
-		JButton btnNewButton_1 = new JButton("Play");
+		JButton btnNewButton_1 = new JButton("Play / Pause");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-//				KeyEvent keyEvt = null;//KeyEventRecorder.getLastEvent();
-
-				robocop.delay(PlayTime);
-				sing();
-				while(chckbxNewCheckBox.isSelected())
+				if(is_playing == false)
 				{
-					if(MouseInfo.getPointerInfo().getLocation().x < 10 &&
-						MouseInfo.getPointerInfo().getLocation().y < 10)
+					element = driver.switchTo().activeElement();
+				
+					player_thread = new MyThread();		
+					player_thread.pause = false;
+					player_thread.play = true;
+					player_thread.start();
+					
+					is_playing = true;			
+				}
+				else
+				{
+					if(player_thread.pause == false)
 					{
-						break;
+						player_thread.pause = true;
 					}
-					sing();
+					else
+					{
+						player_thread.pause = false;
+					}
 				}
 			}
 		});
-		btnNewButton_1.setBounds(237, 13, 97, 25);
+		btnNewButton_1.setBounds(174, 13, 97, 25);
 		frame.getContentPane().add(btnNewButton_1);
 		
 
@@ -364,34 +315,8 @@ public class main {
 		btnNewButton.setBounds(25, 13, 139, 25);
 		frame.getContentPane().add(btnNewButton);
 		
-		textField = new JTextField();
-		textField.setText("3000");
-		textField.getDocument().addDocumentListener(new DocumentListener() {
-			  public void changedUpdate(DocumentEvent e) {		  
-			  }
-			  public void removeUpdate(DocumentEvent e) {
-				  if(!textField.getText().equals(""))
-				  {
-					  PlayTime = Integer.parseInt(textField.getText());		
-				  }
-			  }
-			  public void insertUpdate(DocumentEvent e) {
-				  if(!textField.getText().equals(""))
-				  {
-					  PlayTime = Integer.parseInt(textField.getText());		
-				  }
-			  }
-		});
-		textField.setBounds(566, 73, 75, 22);
-		frame.getContentPane().add(textField);
-		textField.setColumns(10);
-		
-		JLabel lblNewLabel = new JLabel("Time before playing");
-		lblNewLabel.setBounds(437, 76, 139, 16);
-		frame.getContentPane().add(lblNewLabel);
-		
 		JLabel lblTimeForSpace = new JLabel("Time for space(\" \")");
-		lblTimeForSpace.setBounds(437, 111, 139, 16);
+		lblTimeForSpace.setBounds(457, 212, 139, 16);
 		frame.getContentPane().add(lblTimeForSpace);
 		
 		textField_1 = new JTextField();
@@ -413,11 +338,11 @@ public class main {
 			  }
 		});
 		textField_1.setColumns(10);
-		textField_1.setBounds(566, 108, 75, 22);
+		textField_1.setBounds(586, 209, 75, 22);
 		frame.getContentPane().add(textField_1);
 		
 		JLabel lblTimeFor = new JLabel("Time for \"-\"");
-		lblTimeFor.setBounds(437, 143, 139, 16);
+		lblTimeFor.setBounds(457, 244, 139, 16);
 		frame.getContentPane().add(lblTimeFor);
 		
 		textField_2 = new JTextField();
@@ -439,11 +364,11 @@ public class main {
 			  }
 		});
 		textField_2.setColumns(10);
-		textField_2.setBounds(566, 140, 75, 22);
+		textField_2.setBounds(586, 241, 75, 22);
 		frame.getContentPane().add(textField_2);
 		
 		JLabel lblTimeBetweenNotes = new JLabel("Time between notes");
-		lblTimeBetweenNotes.setBounds(437, 175, 139, 16);
+		lblTimeBetweenNotes.setBounds(457, 276, 139, 16);
 		frame.getContentPane().add(lblTimeBetweenNotes);
 		
 		textField_3 = new JTextField();
@@ -465,11 +390,47 @@ public class main {
 			  }
 		});
 		textField_3.setColumns(10);
-		textField_3.setBounds(566, 172, 75, 22);
+		textField_3.setBounds(586, 273, 75, 22);
 		frame.getContentPane().add(textField_3);
 		
-		JLabel lblNewLabel_1 = new JLabel("The time is expressed in ms!");
-		lblNewLabel_1.setBounds(445, 52, 194, 16);
+		JLabel lblNewLabel_1 = new JLabel("The time is represented in ms!");
+		lblNewLabel_1.setBounds(447, 186, 194, 16);
 		frame.getContentPane().add(lblNewLabel_1);
+
+        
+		isWindows(System.getProperty("os.name"));
+		isMac(System.getProperty("os.name"));
+		isUnix(System.getProperty("os.name"));
+		driver = new ChromeDriver();
+		driver.get("http://www.virtualpiano.net/");
+		player_thread = new MyThread();
+		
+		JButton btnNewButton_2 = new JButton("Open Chrome");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				element = driver.switchTo().activeElement();
+
+				player_thread = new MyThread();
+				player_thread.play = true;
+				player_thread.start();
+					
+			}
+		});
+		btnNewButton_2.setBounds(380, 14, 107, 23);
+		frame.getContentPane().add(btnNewButton_2);
+		
+		JButton btnStop = new JButton("Stop");
+		btnStop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				is_playing = false;
+				player_thread.play = false;
+				robocop.delay(100);
+				player_thread = null;
+			}
+		});
+		btnStop.setBounds(281, 14, 89, 23);
+		frame.getContentPane().add(btnStop);
 	}
 }
